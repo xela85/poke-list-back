@@ -19,3 +19,7 @@ libraryDependencies ++= Seq(
 scalacOptions ++= Seq("-Ypartial-unification")
 
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
+
+enablePlugins(JavaAppPackaging)
+
+mappings in (Compile, packageDoc) := Seq()
