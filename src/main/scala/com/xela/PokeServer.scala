@@ -4,6 +4,7 @@ package xela
 import java.net.URI
 
 import akka.actor.ActorSystem
+import akka.event.LoggingAdapter
 import akka.http.scaladsl.model.{HttpResponse, StatusCodes}
 import akka.http.scaladsl.model.headers.`Access-Control-Allow-Origin`
 import akka.http.scaladsl.server.{HttpApp, Route}
@@ -23,29 +24,28 @@ trait PokeServer extends HttpApp {
   private implicit lazy val actorMaterializer: ActorMaterializer = ActorMaterializer()(actorSystem)
   private implicit lazy val dispatcher: ExecutionContextExecutor = actorSystem.dispatcher
 
-  lazy val log = actorSystem.log
+  lazy val log: LoggingAdapter = actorSystem.log
 
-  override protected def routes: Route = get {
+  override protected def routes: Route = pathSingleSlash(complete(StatusCodes.OK)) ~
+    get {
 
-    respondWithHeaders(`Access-Control-Allow-Origin`.*) {
+      respondWithHeaders(`Access-Control-Allow-Origin`.*) {
 
-      pathPrefix("pokemons") {
+        pathPrefix("pokemons") {
 
-        path(IntNumber) { id =>
+          path(IntNumber) { id =>
 
-          onComplete(getAverageSkillsOfPokemon(id)) {
-            case Success(allTypes) =>
-              actorSystem.log.info(allTypes.toString)
-              complete(allTypes.asJson)
-            case Failure(error) =>
-              log.error(error, "Unexpected error while executing request")
-              complete(StatusCodes.BadRequest)
+            onComplete(getAverageSkillsOfPokemon(id)) {
+              case Success(allTypes) =>
+                actorSystem.log.info(allTypes.toString)
+                complete(allTypes.asJson)
+              case Failure(error) =>
+                log.error(error, "Unexpected error while executing request")
+                complete(StatusCodes.BadRequest)
+            }
           }
         }
-
-
       }
-    }
 
-  }
+    }
 }

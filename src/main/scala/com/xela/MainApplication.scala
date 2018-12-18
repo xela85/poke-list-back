@@ -6,6 +6,6 @@ object MainApplication extends App {
     override def pokeApi: PokeApi = new AkkaPokeApi("https://pokeapi.co/api/v2", actorSystem, actorMaterializer)
   }
 
-  pokeServer.startServer("localhost", 8080)
+  pokeServer.startServer("0.0.0.0", 8080)
 
 }
